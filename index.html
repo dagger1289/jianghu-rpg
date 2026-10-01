@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>江湖群俠傳</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #111;
+      color: #eee;
+      font-family:
+        "Microsoft JhengHei",
+        "Noto Sans TC",
+        sans-serif;
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    #game {
+      width: min(1200px, 100vw);
+      padding: 16px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      color: #e8c46a;
+      font-size: 26px;
+      letter-spacing: 2px;
+    }
+
+    .subtitle {
+      color: #aaa;
+      margin-bottom: 12px;
+      font-size: 14px;
+    }
+
+    #gameWindow {
+      position: relative;
+      width: 100%;
+      background: #182218;
+      border: 2px solid #80652f;
+      box-shadow: 0 0 25px rgba(0,0,0,.7);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #182218;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+    }
+
+    #loading {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      color: #e8c46a;
+      font-size: 20px;
+      pointer-events: none;
+    }
+
+    #info {
+      margin-top: 10px;
+      padding: 10px 14px;
+      background: #211f1a;
+      border: 1px solid #6e592d;
+      color: #bbb;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .key {
+      display: inline-block;
+      padding: 1px 7px;
+      margin: 0 2px;
+      border: 1px solid #8d7440;
+      background: #302a20;
+      color: #e8c46a;
+      border-radius: 3px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div id="game">
+
+  <h1>⚔ 江湖群俠傳</h1>
+
+  <div class="subtitle">
+    網頁版武俠 RPG・戰鬥測試版
+  </div>
+
+  <div id="gameWindow">
+
+    <canvas
+      id="gameCanvas"
+      width="1200"
+      height="700">
+    </canvas>
+
+    <div id="loading">
+      江湖載入中……
+    </div>
+
+  </div>
+
+  <div id="info">
+    <span class="key">1</span> 移動　
+    <span class="key">2</span> 攻擊　
+    <span class="key">3</span> 防禦　
+    <span class="key">4</span> 物品　
+    <span class="key">R</span> 重新開始
+  </div>
+
+</div>
+
+<script>
+  window.addEventListener("load", function () {
+
+    const loading = document.getElementById("loading");
+
+    setTimeout(function () {
+      loading.style.display = "none";
+    }, 800);
+
+  });
+</script>
+
+<script src="game.js"></script>
+
+</body>
+</html>
