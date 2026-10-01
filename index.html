@@ -1,142 +1,307 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>江湖群俠傳</title>
+<meta charset="UTF-8">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
 
-    body {
-      margin: 0;
-      background: #111;
-      color: #eee;
-      font-family:
+<title>⚔ 江湖群俠傳</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background: #111;
+    color: white;
+    font-family:
         "Microsoft JhengHei",
         "Noto Sans TC",
         sans-serif;
-      display: flex;
-      justify-content: center;
-      min-height: 100vh;
-    }
+    text-align: center;
+}
 
-    #game {
-      width: min(1200px, 100vw);
-      padding: 16px;
-    }
+h1 {
+    margin: 18px 0 4px;
+    font-size: 30px;
+}
 
-    h1 {
-      margin: 0 0 8px;
-      color: #e8c46a;
-      font-size: 26px;
-      letter-spacing: 2px;
-    }
+.subtitle {
+    color: #aaa;
+    margin-bottom: 12px;
+}
 
-    .subtitle {
-      color: #aaa;
-      margin-bottom: 12px;
-      font-size: 14px;
-    }
+#gameContainer {
+    position: relative;
+    width: 1200px;
+    max-width: 96vw;
+    margin: auto;
+}
 
-    #gameWindow {
-      position: relative;
-      width: 100%;
-      background: #182218;
-      border: 2px solid #80652f;
-      box-shadow: 0 0 25px rgba(0,0,0,.7);
-    }
+canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    background: #263b2b;
+    border: 3px solid #8f7b4f;
+    image-rendering: pixelated;
+}
 
-    canvas {
-      display: block;
-      width: 100%;
-      height: auto;
-      background: #182218;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
-    }
+/* =========================
+   對話框
+========================= */
 
-    #loading {
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      color: #e8c46a;
-      font-size: 20px;
-      pointer-events: none;
-    }
+#dialogue {
+    position: absolute;
+    left: 5%;
+    right: 5%;
+    bottom: 30px;
 
-    #info {
-      margin-top: 10px;
-      padding: 10px 14px;
-      background: #211f1a;
-      border: 1px solid #6e592d;
-      color: #bbb;
-      font-size: 14px;
-      line-height: 1.7;
-    }
+    background: rgba(15, 15, 15, 0.94);
 
-    .key {
-      display: inline-block;
-      padding: 1px 7px;
-      margin: 0 2px;
-      border: 1px solid #8d7440;
-      background: #302a20;
-      color: #e8c46a;
-      border-radius: 3px;
-    }
-  </style>
+    border: 2px solid #d6bd79;
+    border-radius: 8px;
+
+    padding: 18px;
+
+    text-align: left;
+
+    z-index: 20;
+}
+
+#dialogueName {
+    color: #e6c76a;
+    font-size: 22px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#dialogueText {
+    font-size: 18px;
+    line-height: 1.7;
+    margin-bottom: 12px;
+}
+
+#dialogueNext {
+    display: block;
+    margin-left: auto;
+
+    padding: 7px 22px;
+
+    background: #4c3b24;
+    color: white;
+
+    border: 1px solid #d6bd79;
+    border-radius: 5px;
+
+    cursor: pointer;
+
+    font-size: 16px;
+}
+
+#dialogueNext:hover {
+    background: #70552f;
+}
+
+/* =========================
+   戰鬥 UI
+========================= */
+
+#battleUI {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 20px;
+
+    z-index: 30;
+
+    display: flex;
+
+    justify-content: center;
+    gap: 15px;
+
+    padding: 12px;
+}
+
+.battleButton {
+    min-width: 110px;
+
+    padding: 10px 18px;
+
+    font-size: 18px;
+
+    color: white;
+
+    background: #33291f;
+
+    border: 2px solid #c8ad69;
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+.battleButton:hover {
+    background: #59452c;
+}
+
+#battleStatus {
+    position: absolute;
+
+    top: 15px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    z-index: 30;
+
+    background: rgba(0,0,0,0.75);
+
+    padding: 8px 18px;
+
+    border: 1px solid #c8ad69;
+    border-radius: 5px;
+
+    font-size: 17px;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================
+   操作說明
+========================= */
+
+.controls {
+    margin-top: 12px;
+
+    color: #aaa;
+
+    font-size: 15px;
+
+    line-height: 1.8;
+}
+
+</style>
+
 </head>
+
 
 <body>
 
-<div id="game">
+<h1>⚔ 江湖群俠傳</h1>
 
-  <h1>⚔ 江湖群俠傳</h1>
+<div class="subtitle">
+    網頁版武俠 RPG・村莊測試版
+</div>
 
-  <div class="subtitle">
-    網頁版武俠 RPG・戰鬥測試版
-  </div>
 
-  <div id="gameWindow">
+<div id="gameContainer">
 
     <canvas
-      id="gameCanvas"
-      width="1200"
-      height="700">
+        id="gameCanvas"
+        width="1200"
+        height="700">
     </canvas>
 
-    <div id="loading">
-      江湖載入中……
+
+    <!-- =====================
+         對話框
+    ====================== -->
+
+    <div
+        id="dialogue"
+        class="hidden">
+
+        <div id="dialogueName">
+            NPC
+        </div>
+
+        <div id="dialogueText">
+            ...
+        </div>
+
+        <button id="dialogueNext">
+            繼續
+        </button>
+
     </div>
 
-  </div>
 
-  <div id="info">
-    <span class="key">1</span> 移動　
-    <span class="key">2</span> 攻擊　
-    <span class="key">3</span> 防禦　
-    <span class="key">4</span> 物品　
-    <span class="key">R</span> 重新開始
-  </div>
+    <!-- =====================
+         戰鬥狀態
+    ====================== -->
+
+    <div
+        id="battleStatus"
+        class="hidden">
+
+        主角 HP：
+        <span id="playerHp">100</span>
+
+       　｜　
+
+        山賊 HP：
+        <span id="banditHp">100</span>
+
+    </div>
+
+
+    <!-- =====================
+         戰鬥按鈕
+    ====================== -->
+
+    <div
+        id="battleUI"
+        class="hidden">
+
+        <button
+            id="attackBtn"
+            class="battleButton">
+
+            ⚔ 攻擊
+
+        </button>
+
+
+        <button
+            id="runBtn"
+            class="battleButton">
+
+            ↩ 逃跑
+
+        </button>
+
+    </div>
 
 </div>
 
-<script>
-  window.addEventListener("load", function () {
 
-    const loading = document.getElementById("loading");
+<div class="controls">
 
-    setTimeout(function () {
-      loading.style.display = "none";
-    }, 800);
+    <b>地圖操作：</b>
 
-  });
-</script>
+    WASD / 方向鍵移動
+
+   　｜　
+
+    靠近 NPC 對話
+
+   　｜　
+
+    靠近山賊進入戰鬥
+
+</div>
+
 
 <script src="game.js"></script>
 
 </body>
+
 </html>
