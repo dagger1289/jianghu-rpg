@@ -365,9 +365,10 @@ function updateGame() {
 
     for (const npc of npcs) {
 
-        if (
-            distance(player, npc) < 75
-        ) {
+if (
+    gameMode === "map" &&
+    distance(player, npc) < 75
+) {
 
             openDialogue(
                 npc.name,
@@ -957,9 +958,10 @@ document
 gameMode =
     "map";
 
-player.x += 100;
-
-          
+            document
+                .getElementById("dialogue")
+                .classList.add(
+                    "hidden"
                 );
 
         }
