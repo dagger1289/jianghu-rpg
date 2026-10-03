@@ -953,16 +953,13 @@ document
         "click",
         function() {
 
-            gameMode =
-                "map";
 
+gameMode =
+    "map";
 
-            document
-                .getElementById(
-                    "dialogue"
-                )
-                .classList.add(
-                    "hidden"
+player.x += 100;
+
+          
                 );
 
         }
