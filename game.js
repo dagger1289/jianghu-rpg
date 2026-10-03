@@ -382,6 +382,20 @@ if (
 
     }
 
+    if (dialogueCooldown === 1) {
+    let nearNpc = false;
+
+    for (const npc of npcs) {
+        if (distance(player, npc) < 100) {
+            nearNpc = true;
+            break;
+        }
+    }
+
+    if (!nearNpc) {
+        dialogueCooldown = 0;
+    }
+}
 
     // -------------------------------------------------
     // 山賊戰鬥
