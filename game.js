@@ -50,6 +50,7 @@ const GAME_WIDTH = canvas.width;
 const GAME_HEIGHT = canvas.height;
 
 let gameMode = "map";
+let dialogueCooldown = 0;
 
 const keys = {};
 
