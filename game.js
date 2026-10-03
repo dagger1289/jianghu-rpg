@@ -367,6 +367,7 @@ function updateGame() {
     for (const npc of npcs) {
 
 if (
+    dialogueCooldown === 0 &&
     distance(player, npc) < 75
 ) {
 
@@ -957,7 +958,7 @@ document
 
 gameMode =
     "map";
-
+dialogueCooldown = 1;
             document
                 .getElementById("dialogue")
                 .classList.add(
