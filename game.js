@@ -65,8 +65,8 @@ const player = {
 
     speed: 3,
 
-    width: 52,
-    height: 76
+    width: 30,
+    height: 44
 
 };
 
@@ -496,8 +496,8 @@ function drawMap() {
 
             npc.y - camera.y,
 
-            48,
-            70
+            28,
+            41
 
         );
 
@@ -516,8 +516,8 @@ function drawMap() {
 
         bandit.y - camera.y,
 
-        50,
-        72
+        28,
+        41
 
     );
 
