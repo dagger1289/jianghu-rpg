@@ -366,7 +366,6 @@ function updateGame() {
     for (const npc of npcs) {
 
 if (
-    gameMode === "map" &&
     distance(player, npc) < 75
 ) {
 
