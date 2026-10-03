@@ -324,14 +324,34 @@ function updateGame() {
             Math.sqrt(dx * dx + dy * dy);
 
 
-        player.x +=
-            (dx / length) *
-            player.speed;
+const nextX =
+    player.x +
+    (dx / length) *
+    player.speed;
 
+const nextY =
+    player.y +
+    (dy / length) *
+    player.speed;
 
-        player.y +=
-            (dy / length) *
-            player.speed;
+let blocked = false;
+
+for (const npc of npcs) {
+    if (
+        distance(
+            { x: nextX, y: nextY },
+            npc
+        ) < 35
+    ) {
+        blocked = true;
+        break;
+    }
+}
+
+if (!blocked) {
+    player.x = nextX;
+    player.y = nextY;
+}
 
     }
 
