@@ -129,12 +129,15 @@ let battleFrame = 0;
 
 let battleFrameTimer = 0;
 
+// 戰鬥演出
+let battleAction = "idle";
+let battleEffectTimer = 0;
+let battleEffectType = "";
+let battleBusy = false;
 
-// 你的圖片是：
+
 // 第一排 4 格
 // 第二排 3 格
-//
-// 所以使用這 7 個 frame
 //
 // 0 1 2 3
 // 4 5 6
@@ -324,34 +327,45 @@ function updateGame() {
             Math.sqrt(dx * dx + dy * dy);
 
 
-const nextX =
-    player.x +
-    (dx / length) *
-    player.speed;
+        const nextX =
+            player.x +
+            (dx / length) *
+            player.speed;
 
-const nextY =
-    player.y +
-    (dy / length) *
-    player.speed;
 
-let blocked = false;
+        const nextY =
+            player.y +
+            (dy / length) *
+            player.speed;
 
-for (const npc of npcs) {
-    if (
-        distance(
-            { x: nextX, y: nextY },
-            npc
-        ) < 35
-    ) {
-        blocked = true;
-        break;
-    }
-}
 
-if (!blocked) {
-    player.x = nextX;
-    player.y = nextY;
-}
+        let blocked = false;
+
+
+        // NPC 碰撞
+        for (const npc of npcs) {
+
+            if (
+                distance(
+                    { x: nextX, y: nextY },
+                    npc
+                ) < 35
+            ) {
+
+                blocked = true;
+                break;
+
+            }
+
+        }
+
+
+        if (!blocked) {
+
+            player.x = nextX;
+            player.y = nextY;
+
+        }
 
     }
 
@@ -380,16 +394,16 @@ if (!blocked) {
     );
 
 
-    // -------------------------------------------------
+    // =================================================
     // NPC 對話
-    // -------------------------------------------------
+    // =================================================
 
     for (const npc of npcs) {
 
-if (
-    dialogueCooldown === 0 &&
-    distance(player, npc) < 75
-) {
+        if (
+            dialogueCooldown === 0 &&
+            distance(player, npc) < 75
+        ) {
 
             openDialogue(
                 npc.name,
@@ -402,24 +416,41 @@ if (
 
     }
 
+
+    // 對話結束後，必須離開 NPC 一段距離
+    // 才能再次觸發
+
     if (dialogueCooldown === 1) {
-    let nearNpc = false;
 
-    for (const npc of npcs) {
-        if (distance(player, npc) < 100) {
-            nearNpc = true;
-            break;
+        let nearNpc = false;
+
+
+        for (const npc of npcs) {
+
+            if (
+                distance(player, npc) < 100
+            ) {
+
+                nearNpc = true;
+                break;
+
+            }
+
         }
+
+
+        if (!nearNpc) {
+
+            dialogueCooldown = 0;
+
+        }
+
     }
 
-    if (!nearNpc) {
-        dialogueCooldown = 0;
-    }
-}
 
-    // -------------------------------------------------
+    // =================================================
     // 山賊戰鬥
-    // -------------------------------------------------
+    // =================================================
 
     if (
         distance(player, bandit) < 85
@@ -459,11 +490,9 @@ function drawCharacter(
         image,
 
         x - width / 2,
-
         y - height,
 
         width,
-
         height
 
     );
@@ -481,9 +510,7 @@ function drawMap() {
         getCamera();
 
 
-    // -------------------------------------------------
     // 地圖
-    // -------------------------------------------------
 
     if (
         mapImage.complete &&
@@ -518,9 +545,7 @@ function drawMap() {
     }
 
 
-    // -------------------------------------------------
     // NPC
-    // -------------------------------------------------
 
     for (const npc of npcs) {
 
@@ -529,7 +554,6 @@ function drawMap() {
             npc.image,
 
             npc.x - camera.x,
-
             npc.y - camera.y,
 
             28,
@@ -540,16 +564,13 @@ function drawMap() {
     }
 
 
-    // -------------------------------------------------
     // 山賊
-    // -------------------------------------------------
 
     drawCharacter(
 
         banditImage,
 
         bandit.x - camera.x,
-
         bandit.y - camera.y,
 
         28,
@@ -558,28 +579,22 @@ function drawMap() {
     );
 
 
-    // -------------------------------------------------
     // 主角
-    // -------------------------------------------------
 
     drawCharacter(
 
         playerImage,
 
         player.x - camera.x,
-
         player.y - camera.y,
 
         player.width,
-
         player.height
 
     );
 
 
-    // -------------------------------------------------
     // 遊戲標題
-    // -------------------------------------------------
 
     ctx.fillStyle =
         "rgba(0,0,0,0.65)";
@@ -592,7 +607,8 @@ function drawMap() {
     );
 
 
-    ctx.fillStyle = "#ffffff";
+    ctx.fillStyle =
+        "#ffffff";
 
     ctx.font =
         "18px Microsoft JhengHei";
@@ -608,7 +624,7 @@ function drawMap() {
 
 
 // =====================================================
-// 取得 Sprite Sheet 的第 N 格
+// 戰鬥 Sprite Sheet
 // =====================================================
 
 function drawBattleFrame(
@@ -715,6 +731,224 @@ function drawBattleFrame(
 
 
 // =====================================================
+// 戰鬥特效
+// =====================================================
+
+function drawBattleEffect() {
+
+    if (
+        battleEffectTimer <= 0
+    ) {
+
+        return;
+
+    }
+
+
+    const progress =
+        1 -
+        battleEffectTimer / 260;
+
+
+    ctx.save();
+
+
+    // =================================================
+    // 主角攻擊：藍色劍光
+    // =================================================
+
+    if (
+        battleAction === "playerAttack"
+    ) {
+
+        const move =
+            Math.sin(
+                progress * Math.PI
+            ) * 55;
+
+
+        ctx.globalAlpha = 0.9;
+
+
+        ctx.strokeStyle =
+            "#8fdcff";
+
+        ctx.lineWidth = 10;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            360 + move,
+            300
+        );
+
+        ctx.lineTo(
+            610 + move,
+            260
+        );
+
+        ctx.stroke();
+
+
+        ctx.strokeStyle =
+            "#ffffff";
+
+        ctx.lineWidth = 4;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            375 + move,
+            315
+        );
+
+        ctx.lineTo(
+            625 + move,
+            275
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    // =================================================
+    // 山賊反擊：紅色攻擊光
+    // =================================================
+
+    if (
+        battleAction === "banditAttack"
+    ) {
+
+        const move =
+            Math.sin(
+                progress * Math.PI
+            ) * 55;
+
+
+        ctx.globalAlpha = 0.9;
+
+
+        ctx.strokeStyle =
+            "#ff6b5f";
+
+        ctx.lineWidth = 10;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            840 - move,
+            300
+        );
+
+        ctx.lineTo(
+            590 - move,
+            260
+        );
+
+        ctx.stroke();
+
+
+        ctx.strokeStyle =
+            "#fff0d0";
+
+        ctx.lineWidth = 4;
+
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            825 - move,
+            315
+        );
+
+        ctx.lineTo(
+            575 - move,
+            275
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    // =================================================
+    // 命中閃光
+    // =================================================
+
+    if (
+        battleEffectType === "banditHit" ||
+        battleEffectType === "playerHit"
+    ) {
+
+        const flash =
+            Math.max(
+                0,
+                1 - progress * 1.5
+            );
+
+
+        const x =
+            battleEffectType === "banditHit"
+                ? 690
+                : 230;
+
+
+        ctx.globalAlpha =
+            flash * 0.85;
+
+        ctx.fillStyle =
+            "#ffd95a";
+
+
+        ctx.beginPath();
+
+
+        ctx.arc(
+
+            x,
+            320,
+
+            65 +
+            progress * 35,
+
+            0,
+            Math.PI * 2
+
+        );
+
+
+        ctx.fill();
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+function startBattleEffect(
+    action,
+    effectType
+) {
+
+    battleAction =
+        action;
+
+    battleEffectType =
+        effectType;
+
+    battleEffectTimer =
+        260;
+
+}
+
+
+// =====================================================
 // 戰鬥畫面
 // =====================================================
 
@@ -798,9 +1032,7 @@ function drawBattle() {
     }
 
 
-    // -------------------------------------------------
     // 主角
-    // -------------------------------------------------
 
     drawBattleFrame(
 
@@ -810,6 +1042,7 @@ function drawBattle() {
 
         80,
         150,
+
         360,
         360,
 
@@ -818,9 +1051,7 @@ function drawBattle() {
     );
 
 
-    // -------------------------------------------------
     // 山賊
-    // -------------------------------------------------
 
     drawBattleFrame(
 
@@ -830,6 +1061,7 @@ function drawBattle() {
 
         520,
         150,
+
         360,
         360,
 
@@ -838,9 +1070,12 @@ function drawBattle() {
     );
 
 
-    // -------------------------------------------------
+    // 攻擊／受擊特效
+
+    drawBattleEffect();
+
+
     // 名稱
-    // -------------------------------------------------
 
     ctx.fillStyle =
         "#ffffff";
@@ -863,9 +1098,7 @@ function drawBattle() {
     );
 
 
-    // -------------------------------------------------
     // HP
-    // -------------------------------------------------
 
     drawHPBar(
         120,
@@ -964,37 +1197,52 @@ function openDialogue(
         "dialogue";
 
 
-    document.getElementById(
-        "dialogueName"
-    ).textContent = name;
+    document
+        .getElementById(
+            "dialogueName"
+        )
+        .textContent =
+        name;
 
 
-    document.getElementById(
-        "dialogueText"
-    ).textContent = text;
+    document
+        .getElementById(
+            "dialogueText"
+        )
+        .textContent =
+        text;
 
 
-    document.getElementById(
-        "dialogue"
-    ).classList.remove(
-        "hidden"
-    );
+    document
+        .getElementById(
+            "dialogue"
+        )
+        .classList.remove(
+            "hidden"
+        );
 
 }
 
 
 document
-    .getElementById("dialogueNext")
+    .getElementById(
+        "dialogueNext"
+    )
     .addEventListener(
         "click",
         function() {
 
+            gameMode =
+                "map";
 
-gameMode =
-    "map";
-dialogueCooldown = 1;
+            dialogueCooldown =
+                1;
+
+
             document
-                .getElementById("dialogue")
+                .getElementById(
+                    "dialogue"
+                )
                 .classList.add(
                     "hidden"
                 );
@@ -1022,9 +1270,30 @@ function startBattle() {
         "battle";
 
 
-    playerHP = 100;
+    playerHP =
+        100;
 
-    banditHP = 100;
+    banditHP =
+        100;
+
+
+    battleFrame =
+        0;
+
+    battleFrameTimer =
+        0;
+
+    battleAction =
+        "idle";
+
+    battleEffectTimer =
+        0;
+
+    battleEffectType =
+        "";
+
+    battleBusy =
+        false;
 
 
     updateBattleUI();
@@ -1047,15 +1316,19 @@ function startBattle() {
 
 function updateBattleUI() {
 
-    document.getElementById(
-        "playerHp"
-    ).textContent =
+    document
+        .getElementById(
+            "playerHp"
+        )
+        .textContent =
         playerHP;
 
 
-    document.getElementById(
-        "banditHp"
-    ).textContent =
+    document
+        .getElementById(
+            "banditHp"
+        )
+        .textContent =
         banditHP;
 
 }
@@ -1066,13 +1339,16 @@ function updateBattleUI() {
 // =====================================================
 
 document
-    .getElementById("attackBtn")
+    .getElementById(
+        "attackBtn"
+    )
     .addEventListener(
         "click",
         function() {
 
             if (
-                gameMode !== "battle"
+                gameMode !== "battle" ||
+                battleBusy
             ) {
 
                 return;
@@ -1080,62 +1356,33 @@ document
             }
 
 
-            // 山賊受到傷害
-
-            banditHP -= 20;
-
-
-            if (
-                banditHP < 0
-            ) {
-
-                banditHP = 0;
-
-            }
+            battleBusy =
+                true;
 
 
-            updateBattleUI();
+            // 主角攻擊
 
+            startBattleEffect(
+                "playerAttack",
+                "banditHit"
+            );
 
-            // 山賊死亡
-
-            if (
-                banditHP === 0
-            ) {
-
-                setTimeout(
-                    function() {
-
-                        alert(
-                            "山賊倒下了！"
-                        );
-
-
-                        endBattle();
-
-                    },
-                    150
-                );
-
-
-                return;
-
-            }
-
-
-            // 山賊反擊
 
             setTimeout(
                 function() {
 
-                    playerHP -= 15;
+                    // 山賊受到傷害
+
+                    banditHP -=
+                        20;
 
 
                     if (
-                        playerHP < 0
+                        banditHP < 0
                     ) {
 
-                        playerHP = 0;
+                        banditHP =
+                            0;
 
                     }
 
@@ -1143,28 +1390,111 @@ document
                     updateBattleUI();
 
 
+                    // 山賊死亡
+
                     if (
-                        playerHP === 0
+                        banditHP === 0
                     ) {
 
                         setTimeout(
                             function() {
 
                                 alert(
-                                    "主角倒下了！"
+                                    "山賊倒下了！"
                                 );
 
 
                                 endBattle();
 
                             },
-                            150
+                            180
                         );
+
+
+                        return;
 
                     }
 
+
+                    // 山賊反擊演出
+
+                    setTimeout(
+                        function() {
+
+                            startBattleEffect(
+                                "banditAttack",
+                                "playerHit"
+                            );
+
+                        },
+                        180
+                    );
+
+
+                    // 山賊造成傷害
+
+                    setTimeout(
+                        function() {
+
+                            playerHP -=
+                                15;
+
+
+                            if (
+                                playerHP < 0
+                            ) {
+
+                                playerHP =
+                                    0;
+
+                            }
+
+
+                            updateBattleUI();
+
+
+                            // 主角死亡
+
+                            if (
+                                playerHP === 0
+                            ) {
+
+                                setTimeout(
+                                    function() {
+
+                                        alert(
+                                            "主角倒下了！"
+                                        );
+
+
+                                        endBattle();
+
+                                    },
+                                    180
+                                );
+
+                            }
+
+                            else {
+
+                                setTimeout(
+                                    function() {
+
+                                        battleBusy =
+                                            false;
+
+                                    },
+                                    180
+                                );
+
+                            }
+
+                        },
+                        440
+                    );
+
                 },
-                350
+                260
             );
 
         }
@@ -1176,7 +1506,9 @@ document
 // =====================================================
 
 document
-    .getElementById("runBtn")
+    .getElementById(
+        "runBtn"
+    )
     .addEventListener(
         "click",
         endBattle
@@ -1198,9 +1530,23 @@ function endBattle() {
         );
 
 
+    battleBusy =
+        false;
+
+    battleAction =
+        "idle";
+
+    battleEffectTimer =
+        0;
+
+    battleEffectType =
+        "";
+
+
     // 戰鬥結束後讓主角離開山賊一點
 
-    player.x += 120;
+    player.x +=
+        120;
 
 }
 
@@ -1211,7 +1557,9 @@ function endBattle() {
 
 function gameLoop(time) {
 
-    if (!gameLoop.lastTime) {
+    if (
+        !gameLoop.lastTime
+    ) {
 
         gameLoop.lastTime =
             time;
@@ -1230,7 +1578,8 @@ function gameLoop(time) {
 
     // 戰鬥動畫速度
 
-    battleFrameTimer += delta;
+    battleFrameTimer +=
+        delta;
 
 
     if (
@@ -1239,17 +1588,48 @@ function gameLoop(time) {
 
         battleFrame++;
 
+
         if (
             battleFrame >=
             BATTLE_FRAMES
         ) {
 
-            battleFrame = 0;
+            battleFrame =
+                0;
 
         }
 
 
-        battleFrameTimer = 0;
+        battleFrameTimer =
+            0;
+
+    }
+
+
+    // 戰鬥特效倒數
+
+    if (
+        battleEffectTimer > 0
+    ) {
+
+        battleEffectTimer -=
+            delta;
+
+
+        if (
+            battleEffectTimer <= 0
+        ) {
+
+            battleEffectTimer =
+                0;
+
+            battleAction =
+                "idle";
+
+            battleEffectType =
+                "";
+
+        }
 
     }
 
@@ -1257,7 +1637,7 @@ function gameLoop(time) {
     updateGame();
 
 
-    // 畫面
+    // 清除畫面
 
     ctx.clearRect(
         0,
@@ -1266,6 +1646,8 @@ function gameLoop(time) {
         GAME_HEIGHT
     );
 
+
+    // 根據遊戲模式繪製
 
     if (
         gameMode === "battle"
