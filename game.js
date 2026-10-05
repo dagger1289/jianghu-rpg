@@ -60,15 +60,11 @@ const keys = {};
 // =====================================================
 
 const player = {
-
     x: 780,
     y: 520,
-
     speed: 3,
-
     width: 30,
     height: 44
-
 };
 
 
@@ -82,22 +78,16 @@ const npcs = [
         name: "老人",
         x: 1060,
         y: 500,
-
         image: oldManImage,
-
-        text:
-            "年輕人，江湖路遠，凡事小心。"
+        text: "年輕人，江湖路遠，凡事小心。"
     },
 
     {
         name: "少女",
         x: 1260,
         y: 430,
-
         image: heroineImage,
-
-        text:
-            "前方山路似乎有山賊出沒……"
+        text: "前方山路似乎有山賊出沒……"
     }
 
 ];
@@ -108,13 +98,10 @@ const npcs = [
 // =====================================================
 
 const bandit = {
-
     x: 560,
     y: 310,
-
     width: 90,
     height: 130
-
 };
 
 
@@ -125,26 +112,19 @@ const bandit = {
 let playerHP = 100;
 let banditHP = 100;
 
-let battleFrame = 0;
-
-let battleFrameTimer = 0;
-
-// 戰鬥演出
-let battleAction = "idle";
-let battleEffectTimer = 0;
-let battleEffectType = "";
-let battleBusy = false;
-
-
-// 第一排 4 格
-// 第二排 3 格
-//
-// 0 1 2 3
-// 4 5 6
-
 const BATTLE_COLUMNS = 4;
 const BATTLE_ROWS = 2;
 const BATTLE_FRAMES = 7;
+
+let battleFrame = 0;
+let battleFrameTimer = 0;
+
+// 戰鬥演出
+let battleBusy = false;
+let battleAction = "idle";
+let battleEffectTimer = 0;
+let battleEffectType = "";
+let battleShake = 0;
 
 
 // =====================================================
@@ -197,9 +177,7 @@ function distance(a, b) {
 function getMapWidth() {
 
     if (mapImage.naturalWidth) {
-
         return mapImage.naturalWidth;
-
     }
 
     return 1536;
@@ -210,9 +188,7 @@ function getMapWidth() {
 function getMapHeight() {
 
     if (mapImage.naturalHeight) {
-
         return mapImage.naturalHeight;
-
     }
 
     return 1024;
@@ -235,7 +211,6 @@ function getCamera() {
     let cameraY =
         player.y - GAME_HEIGHT / 2;
 
-
     cameraX = Math.max(
         0,
         Math.min(
@@ -243,7 +218,6 @@ function getCamera() {
             cameraX
         )
     );
-
 
     cameraY = Math.max(
         0,
@@ -253,12 +227,9 @@ function getCamera() {
         )
     );
 
-
     return {
-
         x: cameraX,
         y: cameraY
-
     };
 
 }
@@ -271,83 +242,66 @@ function getCamera() {
 function updateGame() {
 
     if (gameMode !== "map") {
-
         return;
-
     }
-
 
     let dx = 0;
     let dy = 0;
-
 
     if (
         keys["arrowleft"] ||
         keys["a"]
     ) {
-
         dx -= 1;
-
     }
-
 
     if (
         keys["arrowright"] ||
         keys["d"]
     ) {
-
         dx += 1;
-
     }
-
 
     if (
         keys["arrowup"] ||
         keys["w"]
     ) {
-
         dy -= 1;
-
     }
-
 
     if (
         keys["arrowdown"] ||
         keys["s"]
     ) {
-
         dy += 1;
-
     }
-
 
     if (dx !== 0 || dy !== 0) {
 
         const length =
             Math.sqrt(dx * dx + dy * dy);
 
-
         const nextX =
             player.x +
             (dx / length) *
             player.speed;
-
 
         const nextY =
             player.y +
             (dy / length) *
             player.speed;
 
-
         let blocked = false;
-
 
         // NPC 碰撞
         for (const npc of npcs) {
 
             if (
                 distance(
-                    { x: nextX, y: nextY },
+                    {
+                        x: nextX,
+                        y: nextY
+                    },
                     npc
                 ) < 35
             ) {
@@ -358,7 +312,6 @@ function updateGame() {
             }
 
         }
-
 
         if (!blocked) {
 
@@ -375,7 +328,6 @@ function updateGame() {
     const mapWidth = getMapWidth();
     const mapHeight = getMapHeight();
 
-
     player.x = Math.max(
         50,
         Math.min(
@@ -383,7 +335,6 @@ function updateGame() {
             player.x
         )
     );
-
 
     player.y = Math.max(
         80,
@@ -417,13 +368,11 @@ function updateGame() {
     }
 
 
-    // 對話結束後，必須離開 NPC 一段距離
-    // 才能再次觸發
+    // 對話結束後必須離開 NPC
 
     if (dialogueCooldown === 1) {
 
         let nearNpc = false;
-
 
         for (const npc of npcs) {
 
@@ -438,11 +387,8 @@ function updateGame() {
 
         }
 
-
         if (!nearNpc) {
-
             dialogueCooldown = 0;
-
         }
 
     }
@@ -484,17 +430,12 @@ function drawCharacter(
 
     }
 
-
     ctx.drawImage(
-
         image,
-
         x - width / 2,
         y - height,
-
         width,
         height
-
     );
 
 }
@@ -510,23 +451,17 @@ function drawMap() {
         getCamera();
 
 
-    // 地圖
-
     if (
         mapImage.complete &&
         mapImage.naturalWidth
     ) {
 
         ctx.drawImage(
-
             mapImage,
-
             -camera.x,
             -camera.y,
-
             getMapWidth(),
             getMapHeight()
-
         );
 
     }
@@ -550,15 +485,11 @@ function drawMap() {
     for (const npc of npcs) {
 
         drawCharacter(
-
             npc.image,
-
             npc.x - camera.x,
             npc.y - camera.y,
-
             28,
             41
-
         );
 
     }
@@ -567,34 +498,26 @@ function drawMap() {
     // 山賊
 
     drawCharacter(
-
         banditImage,
-
         bandit.x - camera.x,
         bandit.y - camera.y,
-
         28,
         41
-
     );
 
 
     // 主角
 
     drawCharacter(
-
         playerImage,
-
         player.x - camera.x,
         player.y - camera.y,
-
         player.width,
         player.height
-
     );
 
 
-    // 遊戲標題
+    // 標題
 
     ctx.fillStyle =
         "rgba(0,0,0,0.65)";
@@ -606,13 +529,10 @@ function drawMap() {
         38
     );
 
-
-    ctx.fillStyle =
-        "#ffffff";
+    ctx.fillStyle = "#ffffff";
 
     ctx.font =
         "18px Microsoft JhengHei";
-
 
     ctx.fillText(
         "江湖 RPG · 村莊",
@@ -628,23 +548,30 @@ function drawMap() {
 // =====================================================
 
 function drawBattleFrame(
-
     image,
     frame,
-
     x,
     y,
     width,
     height,
-
     flip = false
-
 ) {
+
+    // 如果圖片沒載入
+    // 就畫一個簡易人物，避免只剩血條
 
     if (
         !image.complete ||
         !image.naturalWidth
     ) {
+
+        drawBattleFallback(
+            x,
+            y,
+            width,
+            height,
+            flip
+        );
 
         return;
 
@@ -654,7 +581,6 @@ function drawBattleFrame(
     const frameWidth =
         image.naturalWidth /
         BATTLE_COLUMNS;
-
 
     const frameHeight =
         image.naturalHeight /
@@ -731,6 +657,273 @@ function drawBattleFrame(
 
 
 // =====================================================
+// 戰鬥圖片載入失敗時的備用人物
+// =====================================================
+
+function drawBattleFallback(
+    x,
+    y,
+    width,
+    height,
+    flip
+) {
+
+    ctx.save();
+
+    const cx =
+        x + width / 2;
+
+    const headY =
+        y + 70;
+
+
+    // 頭
+
+    ctx.fillStyle =
+        flip
+            ? "#6d342d"
+            : "#304e70";
+
+    ctx.beginPath();
+
+    ctx.arc(
+        cx,
+        headY,
+        30,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // 身體
+
+    ctx.fillRect(
+        cx - 45,
+        headY + 35,
+        90,
+        150
+    );
+
+
+    // 手
+
+    ctx.strokeStyle =
+        "#e6c6a0";
+
+    ctx.lineWidth = 16;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        cx - 25,
+        headY + 60
+    );
+
+    ctx.lineTo(
+        cx - 70,
+        headY + 125
+    );
+
+    ctx.moveTo(
+        cx + 25,
+        headY + 60
+    );
+
+    ctx.lineTo(
+        cx + 70,
+        headY + 125
+    );
+
+    ctx.stroke();
+
+
+    ctx.restore();
+
+}
+
+
+// =====================================================
+// 戰鬥特效
+// =====================================================
+
+function startBattleEffect(
+    action,
+    effectType
+) {
+
+    battleAction =
+        action;
+
+    battleEffectType =
+        effectType;
+
+    // 420ms，比原本更長
+    battleEffectTimer =
+        420;
+
+}
+
+
+function drawSlash(
+    x1,
+    y1,
+    x2,
+    y2,
+    outerWidth,
+    innerWidth
+) {
+
+    ctx.lineCap =
+        "round";
+
+
+    // 外層藍光
+
+    ctx.strokeStyle =
+        "rgba(120,220,255,0.95)";
+
+    ctx.lineWidth =
+        outerWidth;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x1,
+        y1
+    );
+
+    ctx.lineTo(
+        x2,
+        y2
+    );
+
+    ctx.stroke();
+
+
+    // 中心白光
+
+    ctx.strokeStyle =
+        "#ffffff";
+
+    ctx.lineWidth =
+        innerWidth;
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        x1,
+        y1
+    );
+
+    ctx.lineTo(
+        x2,
+        y2
+    );
+
+    ctx.stroke();
+
+}
+
+
+// =====================================================
+// 命中爆閃
+// =====================================================
+
+function drawHitBurst(
+    x,
+    y,
+    color
+) {
+
+    const progress =
+        1 -
+        battleEffectTimer / 420;
+
+    const radius =
+        18 +
+        progress * 65;
+
+    const alpha =
+        Math.max(
+            0,
+            1 - progress
+        );
+
+
+    ctx.save();
+
+    ctx.globalAlpha =
+        alpha;
+
+
+    // 大爆閃
+
+    ctx.fillStyle =
+        color;
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+
+    // 八方向光芒
+
+    ctx.strokeStyle =
+        "#ffffff";
+
+    ctx.lineWidth = 5;
+
+
+    for (
+        let i = 0;
+        i < 8;
+        i++
+    ) {
+
+        const angle =
+            i * Math.PI / 4;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            x +
+            Math.cos(angle) * 20,
+
+            y +
+            Math.sin(angle) * 20
+        );
+
+        ctx.lineTo(
+            x +
+            Math.cos(angle) *
+            (radius + 25),
+
+            y +
+            Math.sin(angle) *
+            (radius + 25)
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    ctx.restore();
+
+}
+
+
+// =====================================================
 // 戰鬥特效
 // =====================================================
 
@@ -747,181 +940,181 @@ function drawBattleEffect() {
 
     const progress =
         1 -
-        battleEffectTimer / 260;
+        battleEffectTimer / 420;
+
+    const ease =
+        Math.sin(
+            progress * Math.PI
+        );
 
 
     ctx.save();
 
 
     // =================================================
-    // 主角攻擊：藍色劍光
+    // 主角攻擊
     // =================================================
 
     if (
-        battleAction === "playerAttack"
+        battleAction ===
+        "playerAttack"
     ) {
 
-        const move =
-            Math.sin(
-                progress * Math.PI
-            ) * 55;
+        const startX =
+            330 +
+            ease * 45;
+
+        const endX =
+            670 +
+            ease * 45;
 
 
-        ctx.globalAlpha = 0.9;
+        // 第一道劍氣
 
+        drawSlash(
+            startX,
+            310,
+            endX,
+            250,
+            18,
+            6
+        );
+
+
+        // 第二道劍氣
+
+        drawSlash(
+            startX + 15,
+            330,
+            endX - 10,
+            285,
+            8,
+            3
+        );
+
+
+        // 劍氣弧光
 
         ctx.strokeStyle =
-            "#8fdcff";
+            "rgba(150,235,255,0.9)";
 
-        ctx.lineWidth = 10;
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            360 + move,
-            300
-        );
-
-        ctx.lineTo(
-            610 + move,
-            260
-        );
-
-        ctx.stroke();
-
-
-        ctx.strokeStyle =
-            "#ffffff";
-
-        ctx.lineWidth = 4;
-
+        ctx.lineWidth = 8;
 
         ctx.beginPath();
-
-        ctx.moveTo(
-            375 + move,
-            315
-        );
-
-        ctx.lineTo(
-            625 + move,
-            275
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    // =================================================
-    // 山賊反擊：紅色攻擊光
-    // =================================================
-
-    if (
-        battleAction === "banditAttack"
-    ) {
-
-        const move =
-            Math.sin(
-                progress * Math.PI
-            ) * 55;
-
-
-        ctx.globalAlpha = 0.9;
-
-
-        ctx.strokeStyle =
-            "#ff6b5f";
-
-        ctx.lineWidth = 10;
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            840 - move,
-            300
-        );
-
-        ctx.lineTo(
-            590 - move,
-            260
-        );
-
-        ctx.stroke();
-
-
-        ctx.strokeStyle =
-            "#fff0d0";
-
-        ctx.lineWidth = 4;
-
-
-        ctx.beginPath();
-
-        ctx.moveTo(
-            825 - move,
-            315
-        );
-
-        ctx.lineTo(
-            575 - move,
-            275
-        );
-
-        ctx.stroke();
-
-    }
-
-
-    // =================================================
-    // 命中閃光
-    // =================================================
-
-    if (
-        battleEffectType === "banditHit" ||
-        battleEffectType === "playerHit"
-    ) {
-
-        const flash =
-            Math.max(
-                0,
-                1 - progress * 1.5
-            );
-
-
-        const x =
-            battleEffectType === "banditHit"
-                ? 690
-                : 230;
-
-
-        ctx.globalAlpha =
-            flash * 0.85;
-
-        ctx.fillStyle =
-            "#ffd95a";
-
-
-        ctx.beginPath();
-
 
         ctx.arc(
-
-            x,
-            320,
-
-            65 +
-            progress * 35,
-
-            0,
-            Math.PI * 2
-
+            500,
+            315,
+            115,
+            -0.75,
+            0.25
         );
 
+        ctx.stroke();
 
-        ctx.fill();
+    }
+
+
+    // =================================================
+    // 山賊反擊
+    // =================================================
+
+    if (
+        battleAction ===
+        "banditAttack"
+    ) {
+
+        const startX =
+            870 -
+            ease * 45;
+
+        const endX =
+            530 -
+            ease * 45;
+
+
+        ctx.lineCap =
+            "round";
+
+
+        // 紅色攻擊光
+
+        ctx.strokeStyle =
+            "rgba(255,90,70,0.95)";
+
+        ctx.lineWidth = 20;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            startX,
+            300
+        );
+
+        ctx.lineTo(
+            endX,
+            255
+        );
+
+        ctx.stroke();
+
+
+        // 中心亮光
+
+        ctx.strokeStyle =
+            "#fff1d0";
+
+        ctx.lineWidth = 6;
+
+        ctx.beginPath();
+
+        ctx.moveTo(
+            startX - 10,
+            320
+        );
+
+        ctx.lineTo(
+            endX + 10,
+            275
+        );
+
+        ctx.stroke();
+
+    }
+
+
+    // =================================================
+    // 山賊被打
+    // =================================================
+
+    if (
+        battleEffectType ===
+        "banditHit"
+    ) {
+
+        drawHitBurst(
+            720,
+            320,
+            "rgba(255,210,80,0.85)"
+        );
+
+    }
+
+
+    // =================================================
+    // 主角被打
+    // =================================================
+
+    if (
+        battleEffectType ===
+        "playerHit"
+    ) {
+
+        drawHitBurst(
+            230,
+            320,
+            "rgba(255,90,70,0.85)"
+        );
 
     }
 
@@ -931,28 +1124,34 @@ function drawBattleEffect() {
 }
 
 
-function startBattleEffect(
-    action,
-    effectType
-) {
-
-    battleAction =
-        action;
-
-    battleEffectType =
-        effectType;
-
-    battleEffectTimer =
-        260;
-
-}
-
-
 // =====================================================
 // 戰鬥畫面
 // =====================================================
 
 function drawBattle() {
+
+    // 畫面震動
+
+    const shakeX =
+        battleShake > 0
+            ? (Math.random() - 0.5) *
+              battleShake
+            : 0;
+
+    const shakeY =
+        battleShake > 0
+            ? (Math.random() - 0.5) *
+              battleShake
+            : 0;
+
+
+    ctx.save();
+
+    ctx.translate(
+        shakeX,
+        shakeY
+    );
+
 
     // 背景
 
@@ -970,7 +1169,6 @@ function drawBattle() {
         "#252019"
     );
 
-
     gradient.addColorStop(
         1,
         "#111820"
@@ -980,7 +1178,6 @@ function drawBattle() {
     ctx.fillStyle =
         gradient;
 
-
     ctx.fillRect(
         0,
         0,
@@ -989,11 +1186,12 @@ function drawBattle() {
     );
 
 
-    // 戰場地面
+    // =================================================
+    // 地面
+    // =================================================
 
     ctx.fillStyle =
         "#3b3328";
-
 
     ctx.fillRect(
         0,
@@ -1002,8 +1200,6 @@ function drawBattle() {
         170
     );
 
-
-    // 地面紋理
 
     ctx.strokeStyle =
         "rgba(255,255,255,0.05)";
@@ -1032,7 +1228,55 @@ function drawBattle() {
     }
 
 
+    // =================================================
+    // 人物攻擊位移
+    // =================================================
+
+    let playerX = 80;
+    let banditX = 520;
+
+
+    if (
+        battleAction ===
+        "playerAttack"
+    ) {
+
+        playerX +=
+            Math.sin(
+                (
+                    1 -
+                    battleEffectTimer /
+                    420
+                ) *
+                Math.PI
+            ) *
+            55;
+
+    }
+
+
+    if (
+        battleAction ===
+        "banditAttack"
+    ) {
+
+        banditX -=
+            Math.sin(
+                (
+                    1 -
+                    battleEffectTimer /
+                    420
+                ) *
+                Math.PI
+            ) *
+            55;
+
+    }
+
+
+    // =================================================
     // 主角
+    // =================================================
 
     drawBattleFrame(
 
@@ -1040,7 +1284,7 @@ function drawBattle() {
 
         battleFrame,
 
-        80,
+        playerX,
         150,
 
         360,
@@ -1051,7 +1295,9 @@ function drawBattle() {
     );
 
 
+    // =================================================
     // 山賊
+    // =================================================
 
     drawBattleFrame(
 
@@ -1059,7 +1305,7 @@ function drawBattle() {
 
         battleFrame,
 
-        520,
+        banditX,
         150,
 
         360,
@@ -1070,12 +1316,16 @@ function drawBattle() {
     );
 
 
-    // 攻擊／受擊特效
+    // =================================================
+    // 特效
+    // =================================================
 
     drawBattleEffect();
 
 
+    // =================================================
     // 名稱
+    // =================================================
 
     ctx.fillStyle =
         "#ffffff";
@@ -1098,7 +1348,9 @@ function drawBattle() {
     );
 
 
+    // =================================================
     // HP
+    // =================================================
 
     drawHPBar(
         120,
@@ -1117,11 +1369,14 @@ function drawBattle() {
         "#c94b4b"
     );
 
+
+    ctx.restore();
+
 }
 
 
 // =====================================================
-// HP BAR
+// HP
 // =====================================================
 
 function drawHPBar(
@@ -1135,7 +1390,6 @@ function drawHPBar(
     ctx.fillStyle =
         "#171717";
 
-
     ctx.fillRect(
         x,
         y,
@@ -1147,23 +1401,17 @@ function drawHPBar(
     ctx.fillStyle =
         color;
 
-
     ctx.fillRect(
-
         x,
         y,
-
         width *
         (hp / 100),
-
         18
-
     );
 
 
     ctx.strokeStyle =
         "#d5c08a";
-
 
     ctx.strokeRect(
         x,
@@ -1283,6 +1531,10 @@ function startBattle() {
     battleFrameTimer =
         0;
 
+
+    battleBusy =
+        false;
+
     battleAction =
         "idle";
 
@@ -1292,8 +1544,8 @@ function startBattle() {
     battleEffectType =
         "";
 
-    battleBusy =
-        false;
+    battleShake =
+        0;
 
 
     updateBattleUI();
@@ -1360,7 +1612,9 @@ document
                 true;
 
 
+            // =================================================
             // 主角攻擊
+            // =================================================
 
             startBattleEffect(
                 "playerAttack",
@@ -1368,10 +1622,10 @@ document
             );
 
 
+            // 劍氣飛出去
+
             setTimeout(
                 function() {
-
-                    // 山賊受到傷害
 
                     banditHP -=
                         20;
@@ -1387,10 +1641,27 @@ document
                     }
 
 
+                    battleShake =
+                        10;
+
+
                     updateBattleUI();
 
 
+                    setTimeout(
+                        function() {
+
+                            battleShake =
+                                0;
+
+                        },
+                        120
+                    );
+
+
+                    // =================================================
                     // 山賊死亡
+                    // =================================================
 
                     if (
                         banditHP === 0
@@ -1407,7 +1678,7 @@ document
                                 endBattle();
 
                             },
-                            180
+                            300
                         );
 
 
@@ -1416,7 +1687,9 @@ document
                     }
 
 
-                    // 山賊反擊演出
+                    // =================================================
+                    // 山賊反擊
+                    // =================================================
 
                     setTimeout(
                         function() {
@@ -1426,12 +1699,29 @@ document
                                 "playerHit"
                             );
 
+
+                            battleShake =
+                                6;
+
+
+                            setTimeout(
+                                function() {
+
+                                    battleShake =
+                                        0;
+
+                                },
+                                150
+                            );
+
                         },
-                        180
+                        220
                     );
 
 
+                    // =================================================
                     // 山賊造成傷害
+                    // =================================================
 
                     setTimeout(
                         function() {
@@ -1453,7 +1743,9 @@ document
                             updateBattleUI();
 
 
+                            // =================================================
                             // 主角死亡
+                            // =================================================
 
                             if (
                                 playerHP === 0
@@ -1470,7 +1762,7 @@ document
                                         endBattle();
 
                                     },
-                                    180
+                                    300
                                 );
 
                             }
@@ -1484,17 +1776,17 @@ document
                                             false;
 
                                     },
-                                    180
+                                    250
                                 );
 
                             }
 
                         },
-                        440
+                        600
                     );
 
                 },
-                260
+                300
             );
 
         }
@@ -1542,8 +1834,11 @@ function endBattle() {
     battleEffectType =
         "";
 
+    battleShake =
+        0;
 
-    // 戰鬥結束後讓主角離開山賊一點
+
+    // 戰鬥結束後讓主角離開山賊
 
     player.x +=
         120;
@@ -1576,7 +1871,9 @@ function gameLoop(time) {
         time;
 
 
-    // 戰鬥動畫速度
+    // =================================================
+    // 戰鬥人物動畫
+    // =================================================
 
     battleFrameTimer +=
         delta;
@@ -1606,7 +1903,9 @@ function gameLoop(time) {
     }
 
 
+    // =================================================
     // 戰鬥特效倒數
+    // =================================================
 
     if (
         battleEffectTimer > 0
@@ -1647,10 +1946,11 @@ function gameLoop(time) {
     );
 
 
-    // 根據遊戲模式繪製
+    // 畫面
 
     if (
-        gameMode === "battle"
+        gameMode ===
+        "battle"
     ) {
 
         drawBattle();
