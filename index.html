@@ -49,7 +49,49 @@ canvas {
     height: auto;
     background: #263b2b;
     border: 3px solid #8f7b4f;
-    image-rendering: pixelated;
+    image-rendering: auto;
+}
+
+canvas:focus-visible {
+    outline: 3px solid #e6c76a;
+    outline-offset: 2px;
+}
+
+#interactionHint,
+#loadingOverlay {
+    position: absolute;
+    z-index: 15;
+    padding: 9px 14px;
+    border: 1px solid rgba(214, 189, 121, 0.85);
+    border-radius: 6px;
+    background: rgba(12, 15, 13, 0.82);
+    color: #fff2c7;
+    pointer-events: none;
+}
+
+#interactionHint {
+    top: 14px;
+    left: 14px;
+    max-width: min(420px, 75%);
+    text-align: left;
+    font-size: 15px;
+}
+
+#loadingOverlay {
+    top: 50%;
+    left: 50%;
+    width: min(620px, 88%);
+    transform: translate(-50%, -50%);
+    padding: 18px 22px;
+    border-width: 2px;
+    font-size: 17px;
+    line-height: 1.6;
+    white-space: pre-line;
+}
+
+#loadingOverlay.error {
+    border-color: #d17b63;
+    color: #ffe0d7;
 }
 
 /* =========================
@@ -62,17 +104,47 @@ canvas {
     right: 5%;
     bottom: 30px;
 
-    background: rgba(15, 15, 15, 0.94);
+    background: transparent;
+    border: 0;
 
-    border: 2px solid #d6bd79;
-    border-radius: 8px;
-
-    padding: 18px;
+    padding: 20px 24px 18px 220px;
+    min-height: 145px;
 
     text-align: left;
 
     z-index: 20;
 }
+
+#dialogue::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: rgba(15, 15, 15, 0.94);
+    border: 2px solid #d6bd79;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+#dialoguePortraitFrame {
+    position: absolute;
+    left: 14px;
+    bottom: calc(100% - 120px);
+    z-index: 2;
+    width: 190px;
+    height: 200px;
+    overflow: hidden;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+#dialoguePortrait {
+    display: none;
+}
+
+#dialogueContent { position: relative; z-index: 1; min-width: 0; }
 
 #dialogueName {
     color: #e6c76a;
@@ -122,15 +194,16 @@ canvas {
     z-index: 30;
 
     display: flex;
+    flex-wrap: wrap;
 
     justify-content: center;
-    gap: 15px;
+    gap: 10px;
 
     padding: 12px;
 }
 
 .battleButton {
-    min-width: 110px;
+    min-width: 95px;
 
     padding: 10px 18px;
 
@@ -148,6 +221,86 @@ canvas {
 
 .battleButton:hover {
     background: #59452c;
+}
+
+.battleButton:disabled {
+    cursor: wait;
+    opacity: 0.55;
+}
+
+#skillPanel {
+    position: absolute;
+    z-index: 40;
+    left: 50%;
+    bottom: 88px;
+    transform: translateX(-50%);
+    width: min(560px, 94%);
+    max-height: 420px;
+    padding: 14px;
+    border: 2px solid #d6bd79;
+    border-radius: 8px;
+    background: rgba(15, 15, 15, 0.97);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.55);
+    text-align: left;
+}
+
+#skillPanelHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    color: #f4dfa6;
+    font-size: 19px;
+    font-weight: bold;
+}
+
+#skillPanelClose {
+    min-width: 40px;
+    padding: 4px 10px;
+    border: 1px solid #d6bd79;
+    border-radius: 5px;
+    background: #33291f;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#skillList {
+    display: grid;
+    gap: 7px;
+    max-height: 330px;
+    overflow-y: auto;
+}
+
+.skillOption {
+    width: 100%;
+    padding: 9px 11px;
+    border: 1px solid #806e47;
+    border-radius: 5px;
+    background: #28231b;
+    color: #fff;
+    text-align: left;
+    cursor: pointer;
+}
+
+.skillOption:hover { background: #493a27; }
+.skillOption.unavailable { border-color: #705e46; color: #c9bfa9; }
+.skillOptionName { display: block; color: #f4dfa6; font-weight: bold; }
+.skillOptionMeta { display: block; margin-top: 3px; color: #c9c1b0; font-size: 13px; }
+.skillOptionDescription { display: block; margin-top: 3px; font-size: 14px; }
+
+@media (max-width: 640px) {
+    #dialogue { left: 3%; right: 3%; padding: 18px 14px 14px 132px; min-height: 118px; }
+    #dialoguePortraitFrame { left: 8px; bottom: calc(100% - 107px); width: 120px; height: 156px; }
+    #dialogueName { font-size: 19px; margin-bottom: 6px; }
+    #dialogueText { font-size: 15px; line-height: 1.5; }
+    #dialogueNext { padding: 7px 16px; }
+    #battleUI { gap: 7px; padding: 8px; }
+    .battleButton { min-width: 76px; padding: 9px 10px; font-size: 15px; }
+    #battleStatus { max-width: 94%; font-size: 14px; padding: 7px 10px; }
+    #skillPanel { bottom: 76px; max-height: 54%; padding: 10px; }
+    #skillList { max-height: 260px; }
 }
 
 #battleStatus {
@@ -168,6 +321,20 @@ canvas {
     border-radius: 5px;
 
     font-size: 17px;
+}
+
+#battleMessage {
+    display: block;
+    margin-top: 4px;
+    color: #f4dfa6;
+    font-size: 14px;
+}
+
+#battleEffects {
+    display: block;
+    margin-top: 4px;
+    color: #bde4d2;
+    font-size: 13px;
 }
 
 .hidden {
@@ -207,8 +374,16 @@ canvas {
     <canvas
         id="gameCanvas"
         width="1200"
-        height="700">
+        height="700"
+        tabindex="0"
+        aria-label="江湖群俠傳村莊遊戲畫面">
+        請使用支援 Canvas 的瀏覽器遊玩。
     </canvas>
+
+    <div id="interactionHint" class="hidden" aria-live="polite"></div>
+    <div id="loadingOverlay" role="status" aria-live="polite">
+        正在載入村莊與角色圖片……
+    </div>
 
 
     <!-- =====================
@@ -219,10 +394,11 @@ canvas {
         id="dialogue"
         class="hidden">
 
-        <div id="dialogueName">
-            NPC
+        <div id="dialoguePortraitFrame" class="hidden" aria-hidden="true">
+            <img id="dialoguePortrait" alt="">
         </div>
-
+        <div id="dialogueContent">
+        <div id="dialogueName">NPC</div>
         <div id="dialogueText">
             ...
         </div>
@@ -230,6 +406,7 @@ canvas {
         <button id="dialogueNext">
             繼續
         </button>
+        </div>
 
     </div>
 
@@ -243,12 +420,22 @@ canvas {
         class="hidden">
 
         主角 HP：
-        <span id="playerHp">100</span>
+        <span id="playerHp" aria-label="主角生命值">100</span>
 
        　｜　
 
         山賊 HP：
-        <span id="banditHp">100</span>
+        <span id="banditHp" aria-label="山賊生命值">100</span>
+
+       　｜　少俠 MP：
+        <span id="playerMp" aria-label="少俠內力">100</span>
+
+       　｜　山賊 MP：
+        <span id="banditMp" aria-label="山賊內力">60</span>
+
+        <span id="battleEffects" aria-label="持續狀態"></span>
+
+        <span id="battleMessage" aria-live="polite"></span>
 
     </div>
 
@@ -263,15 +450,22 @@ canvas {
 
         <button
             id="attackBtn"
+            type="button"
             class="battleButton">
 
             ⚔ 攻擊
 
         </button>
 
+        <button id="moveBtn" type="button" class="battleButton">移動</button>
+        <button id="defendBtn" type="button" class="battleButton">防禦</button>
+
+        <button id="skillBtn" type="button" class="battleButton">武學</button>
+
 
         <button
             id="runBtn"
+            type="button"
             class="battleButton">
 
             ↩ 逃跑
@@ -280,6 +474,14 @@ canvas {
 
     </div>
 
+    <section id="skillPanel" class="hidden" role="dialog" aria-label="武學招式">
+        <div id="skillPanelHeader">
+            <span>選擇武學</span>
+            <button id="skillPanelClose" type="button" aria-label="關閉武學列表">關閉</button>
+        </div>
+        <div id="skillList"></div>
+    </section>
+
 </div>
 
 
@@ -287,20 +489,24 @@ canvas {
 
     <b>地圖操作：</b>
 
-    WASD / 方向鍵移動
+    點擊遊戲畫面後用 WASD / 方向鍵移動
 
    　｜　
 
-    靠近 NPC 對話
+    靠近 NPC 後按 E 對話
 
    　｜　
 
-    靠近山賊進入戰鬥
+    靠近山賊自動進入戰鬥
+
+   　｜　
+
+    戰鬥時選擇移動／攻擊／防禦；移動時點選亮起的格子，攻擊會自動鎖定相鄰敵人
 
 </div>
 
 
-<script src="game.js"></script>
+<script src="game.js?v=dragon-spritesheet-v1"></script>
 
 </body>
 
